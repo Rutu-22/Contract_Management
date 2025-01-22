@@ -1,0 +1,154 @@
+<div *ngIf="loading" class="loading">Loading contractors...</div>
+
+<div *ngIf="error" class="error">{{ error }}</div>
+
+<div *ngIf="successMessage" class="success-message">
+  {{ successMessage }}
+</div>
+
+
+<table>
+  <thead>
+    <tr>
+      <th>Serial No.</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Mobile</th>
+      <th>Gender</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let contractor of Contractor; let i = index">
+      <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>  
+      <td>{{ contractor?.firstName }}</td>
+      <td>{{ contractor?.lastName }}</td>
+      <td>{{ contractor?.email }}</td>
+      <td>{{ contractor?.mobile }}</td>
+      <td>{{ contractor?.gender }}</td>
+      <td>{{ contractor?.status || 'N/A' }}</td>
+      <td>
+        
+        <button class="edit-btn" (click)="onEdit(contractor)" >
+          <span class="material-icons">edit</span>
+        </button>
+        <button class="delete-btn" (click)="onDelete(contractor)">
+          <span class="material-icons">delete</span>
+        </button>
+        
+        
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div class="pagination-container">
+  <!-- Items Per Page Dropdown -->
+<div class="items-per-page">
+  <label for="pageSize">Items per page:</label>
+  <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange($event)">
+    <option value="10">10</option>
+    <option value="25">25</option>
+    <option value="50">50</option>
+    <option value="100">100</option>
+  </select>
+</div>
+
+<div class="pagination-controls">
+  <button 
+    (click)="loadContractors(currentPage - 1, pageSize)" 
+    [disabled]="currentPage === 1">
+    Previous
+  </button>
+
+  <span>
+    Page {{ currentPage }} of {{ totalPages }}
+  </span>
+
+  <button 
+    (click)="loadContractors(currentPage + 1, pageSize)" 
+    [disabled]="currentPage === totalPages">
+    Next
+  </button>
+</div>
+<!-- <div *ngIf="totalItems > 0" class="pagination-controls">
+  <button (click)="loadPreviousPage()" [disabled]="currentPage === 1">Previous</button>
+  <span>Page {{ currentPage }} of {{ totalPages }}</span>
+  <button (click)="loadNextPage()" [disabled]="currentPage === totalPages">Next</button>
+</div> -->
+
+<!-- Pagination Controls -->
+<!-- <div class="pagination-controls">
+  <button (click)="loadContractors(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+  <span>Page {{ currentPage }} of {{ totalPages }}</span>
+  <button (click)="loadContractors(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+</div> -->
+
+
+
+</div>
+
+<!-- No contractors available -->
+<div *ngIf="!loading && Contractor?.length === 0" class="no-contractors">
+  No contractors available. Please add new contractors.
+</div>
+
+
+<!-- Edit Contractor Modal (or inline form) -->
+<div *ngIf="selectedContractor" class="modal">
+  <div class="modal-content">
+    <div class="scrollable-content">
+    <div class="heading">
+    <button class="close-btn" (click)="closeModal()" aria-label="Close">
+      <span class="material-icons">close</span>
+    </button>
+    <h3>Edit Contractor</h3>
+  </div>
+    <form (ngSubmit)="onUpdate()" [formGroup]="contractorForm">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input id="firstName" formControlName="firstName" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input id="lastName" formControlName="lastName" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" formControlName="email" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="mobile">Mobile</label>
+          <input id="mobile" formControlName="mobile" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="gender">Gender</label>
+          <select id="gender" formControlName="gender" class="form-control">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" formControlName="status" class="form-control">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
+      <div class="modal-actions">
+        <button type="submit" [disabled]="contractorForm.invalid" class="btn btn-primary">Update</button>
+        <button type="button" (click)="closeModal()" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+
